@@ -1,34 +1,40 @@
-'use client';
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import { Sun, Moon } from "lucide-react";
 
 export function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
+  // Mount-only effect to read the theme safely in client-side code without hydration mismatch
   useEffect(() => {
-    setMounted(true);
-    const storedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    setTheme(storedTheme || systemTheme);
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
   }, []);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-  };
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
 
-  if (!mounted) return null;
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   return (
     <button
       onClick={toggleTheme}
-      className="rounded-md p-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-      aria-label="Toggle theme"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface/60 text-muted-foreground transition-all hover:bg-muted hover:text-foreground active:scale-95 cursor-pointer"
+      aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+      title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
     >
-      {theme === 'light' ? '🌙' : '☀️'}
+      {theme === "light" ? (
+        <Moon className="h-[18px] w-[18px] transition-transform duration-300 hover:rotate-12" />
+      ) : (
+        <Sun className="h-[18px] w-[18px] transition-transform duration-300 hover:rotate-45" />
+      )}
     </button>
   );
 }
