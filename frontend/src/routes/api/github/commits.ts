@@ -2,18 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { getDb } from "@/server/db";
 import { requireAuth } from "@/server/require-auth";
-import { getBillingRecords } from "@/server/services/billing.service";
 import { errorResponse, jsonResponse } from "@/server/http";
 
-const billingQuerySchema = z.object({
+const commitsQuerySchema = z.object({
   projectId: z.string().min(1),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
-  service: z.string().optional(),
-  limit: z.coerce.number().min(1).max(500).default(100),
+  limit: z.coerce.number().min(1).max(100).default(50),
+  since: z.string().datetime().optional(),
+  until: z.string().datetime().optional(),
 });
 
-export const Route = createFileRoute("/api/billing/")({
+export const Route = createFileRoute("/api/github/commits")({
   server: {
     handlers: {
       GET: async ({ request }) => {
@@ -21,12 +19,11 @@ export const Route = createFileRoute("/api/billing/")({
           const user = await requireAuth(request);
           const url = new URL(request.url);
 
-          const query = billingQuerySchema.parse({
+          const query = commitsQuerySchema.parse({
             projectId: url.searchParams.get("projectId"),
-            startDate: url.searchParams.get("startDate"),
-            endDate: url.searchParams.get("endDate"),
-            service: url.searchParams.get("service"),
             limit: url.searchParams.get("limit"),
+            since: url.searchParams.get("since"),
+            until: url.searchParams.get("until"),
           });
 
           const db = getDb();
@@ -45,16 +42,25 @@ export const Route = createFileRoute("/api/billing/")({
             return errorResponse("Project not found or access denied", 404);
           }
 
-          const options: any = { limit: query.limit };
-          if (query.startDate) options.startDate = new Date(query.startDate);
-          if (query.endDate) options.endDate = new Date(query.endDate);
-          if (query.service) options.service = query.service;
+          // Build where clause
+          const where: any = { projectId: query.projectId };
 
-          const records = await getBillingRecords(query.projectId, options);
+          if (query.since || query.until) {
+            where.createdAt = {};
+            if (query.since) where.createdAt.gte = new Date(query.since);
+            if (query.until) where.createdAt.lte = new Date(query.until);
+          }
+
+          // Fetch deployments (commits)
+          const deployments = await db.deployment.findMany({
+            where,
+            orderBy: { createdAt: "desc" },
+            take: query.limit,
+          });
 
           return jsonResponse({
-            records,
-            total: records.length,
+            deployments,
+            total: deployments.length,
             projectId: query.projectId,
           });
         } catch (error: any) {
