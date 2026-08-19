@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, createFileRoute, redirect, useRouter } from "@tanstack/react-router";
+import { Cloud, TrendingUp, Shield, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,63 +42,158 @@ function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <Link to="/" className="font-display text-xl font-bold tracking-tight">
-            Meridian
+    <div className="flex min-h-screen">
+      {/* Left Side - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-12 flex-col justify-between text-white">
+        <div>
+          <Link to="/" className="flex items-center gap-2 text-2xl font-bold">
+            <Cloud className="h-8 w-8" />
+            CloudLens AI
           </Link>
-          <CardTitle className="pt-4">Create account</CardTitle>
-          <CardDescription>Start tracking cloud costs and deployment impact.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                autoComplete="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
+        </div>
+        
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-4xl font-bold mb-4">
+              FinOps Made Simple
+            </h1>
+            <p className="text-xl text-blue-100">
+              Start tracking cloud costs and deployment impact in minutes.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="bg-blue-500 rounded-lg p-3">
+                <TrendingUp className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-1">Cost Attribution</h3>
+                <p className="text-blue-100">
+                  Automatically link deployments to cost changes
+                </p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+
+            <div className="flex items-start gap-4">
+              <div className="bg-blue-500 rounded-lg p-3">
+                <Shield className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-1">AI-Powered Insights</h3>
+                <p className="text-blue-100">
+                  Get recommendations to optimize your cloud spending
+                </p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="new-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                minLength={8}
-                required
-              />
+
+            <div className="flex items-start gap-4">
+              <div className="bg-blue-500 rounded-lg p-3">
+                <Zap className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-1">Quick Setup</h3>
+                <p className="text-blue-100">
+                  Connect GitHub and upload billing CSV in seconds
+                </p>
+              </div>
             </div>
-            {error ? <p className="text-sm text-destructive">{error}</p> : null}
-            <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? "Creating account..." : "Create account"}
-            </Button>
-          </form>
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link to="/auth/login" className="font-medium text-primary hover:underline">
-              Sign in
+          </div>
+        </div>
+
+        <div className="text-sm text-blue-200">
+          © 2026 CloudLens AI. Built for FinOps teams.
+        </div>
+      </div>
+
+      {/* Right Side - Register Form */}
+      <div className="flex-1 flex items-center justify-center bg-background px-4 py-12">
+        <div className="w-full max-w-md space-y-8">
+          <div className="lg:hidden text-center mb-8">
+            <Link to="/" className="inline-flex items-center gap-2 text-2xl font-bold">
+              <Cloud className="h-7 w-7" />
+              CloudLens AI
             </Link>
+          </div>
+
+          <Card className="border-2">
+            <CardHeader className="space-y-1 text-center">
+              <CardTitle className="text-2xl">Create your account</CardTitle>
+              <CardDescription>
+                Get started with CloudLens AI for free
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full name</Label>
+                  <Input
+                    id="name"
+                    placeholder="John Doe"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Minimum 8 characters"
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    minLength={8}
+                    required
+                    className="h-11"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Must be at least 8 characters long
+                  </p>
+                </div>
+                {error ? (
+                  <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-md text-sm">
+                    {error}
+                  </div>
+                ) : null}
+                <Button type="submit" className="w-full h-11" size="lg" disabled={pending}>
+                  {pending ? "Creating account..." : "Create account"}
+                </Button>
+              </form>
+              
+              <div className="mt-6 text-center text-sm">
+                <span className="text-muted-foreground">Already have an account? </span>
+                <Link 
+                  to="/auth/login" 
+                  className="font-semibold text-primary hover:underline"
+                >
+                  Sign in
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          <p className="text-center text-xs text-muted-foreground">
+            By creating an account, you agree to our Terms of Service and Privacy Policy
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
