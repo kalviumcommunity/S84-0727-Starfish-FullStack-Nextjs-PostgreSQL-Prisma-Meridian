@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import { verifySessionToken } from "./auth";
 import { getDb } from "./db";
 import { errorResponse } from "./http";
@@ -16,7 +17,7 @@ export async function requireAuthUser() {
 
   const user = await getDb().user.findUnique({
     where: { id: payload.sub },
-    select: { id: true, name: true, email: true, createdAt: true },
+    select: { id: true, name: true, email: true, role: true, createdAt: true },
   });
 
   if (!user) {
@@ -25,3 +26,12 @@ export async function requireAuthUser() {
 
   return user;
 }
+
+export async function requireAdminAuth() {
+  const user = await requireAuthUser();
+  if (user.role !== Role.ADMIN) {
+    throw errorResponse("Forbidden: Admin access required", 403);
+  }
+  return user;
+}
+

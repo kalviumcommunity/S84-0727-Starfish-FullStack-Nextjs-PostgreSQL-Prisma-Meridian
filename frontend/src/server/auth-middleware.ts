@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import { createMiddleware } from "@tanstack/react-start";
 
 import { verifySessionToken } from "./auth";
@@ -8,6 +9,7 @@ export type AuthUser = {
   id: string;
   name: string;
   email: string;
+  role: Role;
 };
 
 export type AuthContext = {
@@ -33,7 +35,7 @@ export const authMiddleware = createMiddleware({ type: "function" }).server(asyn
 
   const user = await getDb().user.findUnique({
     where: { id: payload.sub },
-    select: { id: true, name: true, email: true },
+    select: { id: true, name: true, email: true, role: true },
   });
 
   if (!user) {
@@ -46,6 +48,19 @@ export const authMiddleware = createMiddleware({ type: "function" }).server(asyn
   return next({ context: { user } satisfies AuthContext });
 });
 
+export const adminMiddleware = createMiddleware({ type: "function" })
+  .middleware([authMiddleware])
+  .server(async ({ next, context }) => {
+    const { user } = context as AuthContext;
+    if (user.role !== Role.ADMIN) {
+      throw new Response(JSON.stringify({ error: "Forbidden: Admin access required" }), {
+        status: 403,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    return next();
+  });
+
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const token = readSessionToken();
   if (!token) return null;
@@ -55,6 +70,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
 
   return getDb().user.findUnique({
     where: { id: payload.sub },
-    select: { id: true, name: true, email: true },
+    select: { id: true, name: true, email: true, role: true },
   });
 }
+
