@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  passwordHash  String
+  role          Role           @default(USER)
+  createdAt     DateTime       @default(now())
+  organizations Organization[]
+}
+
+model Organization {
+  id        String    @id @default(cuid())
+  name      String
+  ownerId   String
+  createdAt DateTime  @default(now())
+  owner     User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  projects  Project[]
+
+  @@index([ownerId])
+}
+
+model Project {
+  id             String          @id @default(cuid())
+  organizationId String
+  name           String
+  githubUrl      String?
+  createdAt      DateTime        @default(now())
+  billingRecords BillingRecord[]
+  deployments    Deployment[]
+  insights       Insight[]
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model Deployment {
+  id         String   @id @default(cuid())
+  projectId  String
+  commitHash String
+  message    String
+  author     String
+  createdAt  DateTime @default(now())
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+model BillingRecord {
+  id        String   @id @default(cuid())
+  projectId String
+  service   String
+  cost      Decimal  @db.Decimal(12, 4)
+  date      DateTime @db.Date
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([date])
+}
+
+model Insight {
+  id              String   @id @default(cuid())
+  projectId       String
+  title           String
+  description     String
+  confidenceScore Float
+  createdAt       DateTime @default(now())
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
