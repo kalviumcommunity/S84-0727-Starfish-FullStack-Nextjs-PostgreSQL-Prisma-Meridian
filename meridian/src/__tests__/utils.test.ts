@@ -9,8 +9,10 @@ describe("cn (tailwind merge utils)", () => {
   it("should correctly handle conditional classes", () => {
     const isActive = true;
     const isDisabled = false;
-    
-    expect(cn("px-4 py-2", isActive && "bg-blue-500", isDisabled && "opacity-50")).toBe("px-4 py-2 bg-blue-500");
+
+    expect(cn("px-4 py-2", isActive && "bg-blue-500", isDisabled && "opacity-50")).toBe(
+      "px-4 py-2 bg-blue-500",
+    );
   });
 
   it("should correctly merge conflicting tailwind classes (override)", () => {
@@ -19,6 +21,8 @@ describe("cn (tailwind merge utils)", () => {
   });
 
   it("should handle arrays and nested arrays of classes", () => {
-    expect(cn(["flex", "items-center"], ["justify-between"])).toBe("flex items-center justify-between");
+    expect(cn(["flex", "items-center"], ["justify-between"])).toBe(
+      "flex items-center justify-between",
+    );
   });
 });
