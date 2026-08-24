@@ -1,0 +1,12 @@
+[build]
+  # Tell Netlify to look at the Nitro build output folder
+  publish = ".netlify/public"
+  command = "npx prisma generate && npx prisma db push --accept-data-loss && npm run build"
+
+[build.environment]
+  # Force TanStack Start (Nitro) to compile for Netlify Serverless
+  NITRO_PRESET = "netlify"
+
+[functions]
+  # Nitro outputs serverless functions here for Netlify to pick up
+  directory = ".netlify/functions-internal"
