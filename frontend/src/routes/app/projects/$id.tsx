@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   ArrowLeft,
   TrendingUp,
@@ -11,38 +12,62 @@ import {
   RefreshCw,
   Calendar,
   AlertCircle,
+  Download,
+  Loader2,
 } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { 
+  getProjectWithData, 
+  getProjectAnalysis, 
+  getProjectDeployments, 
+  getProjectInsights, 
+  getProjectCorrelations,
+  generateProjectInsightsFn
+} from "@/server/project.functions";
 
 export const Route = createFileRoute("/app/projects/$id")({
   loader: async ({ params }) => {
-    const { getProjectWithData, getProjectAnalysis, getProjectDeployments, getProjectInsights } = 
-      await import("@/server/project.functions");
 
     // Fetch all data in parallel
-    const [project, analysis, deployments, insights] = await Promise.all([
-      getProjectWithData(params.id),
-      getProjectAnalysis(params.id),
-      getProjectDeployments(params.id, 10),
-      getProjectInsights(params.id, 5),
+    const [project, analysis, deployments, insights, correlations] = await Promise.all([
+      getProjectWithData({ data: params.id }),
+      getProjectAnalysis({ data: params.id }),
+      getProjectDeployments({ data: { projectId: params.id, limit: 10 } }),
+      getProjectInsights({ data: { projectId: params.id, limit: 5 } }),
+      getProjectCorrelations({ data: params.id }),
     ]);
 
     if (!project) {
       throw new Error("Project not found");
     }
 
-    return { project, analysis, deployments, insights };
+    return { project, analysis, deployments, insights, correlations };
   },
+  pendingComponent: () => (
+    <div className="flex h-[50vh] flex-col items-center justify-center space-y-4">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <p className="text-sm text-muted-foreground animate-pulse">Loading project data...</p>
+    </div>
+  ),
   component: ProjectDetailPage,
 });
 
 function ProjectDetailPage() {
-  const { project, analysis, deployments, insights } = Route.useLoaderData();
+  const { project, analysis, deployments, insights, correlations } = Route.useLoaderData();
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -74,6 +99,26 @@ function ProjectDetailPage() {
           )}
         </div>
         <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <a href={`/api/projects/${project.id}/export?format=pdf`} download>
+                  Download PDF Report
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a href={`/api/projects/${project.id}/export?format=csv`} download>
+                  Download Billing CSV
+                </a>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Sync Data
@@ -167,6 +212,7 @@ function ProjectDetailPage() {
         <TabsContent value="deployments" className="space-y-6">
           <DeploymentsTab
             deployments={deployments}
+            correlations={correlations}
             projectId={project.id}
             githubUrl={project.githubUrl}
           />
@@ -278,7 +324,7 @@ function OverviewTab({ analysis, deployments, insights, projectId }: any) {
                     <p className="font-medium truncate">{deployment.message}</p>
                     <p className="text-xs text-muted-foreground">
                       by {deployment.author} •{" "}
-                      {new Date(deployment.createdAt).toLocaleDateString()}
+                      {new Date(deployment.createdAt).toLocaleDateString('en-US')}
                     </p>
                   </div>
                 </div>
@@ -306,7 +352,7 @@ function OverviewTab({ analysis, deployments, insights, projectId }: any) {
                   <p className="font-semibold text-sm">{spike.service}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Increased {spike.percentageIncrease.toFixed(1)}% on{" "}
-                    {new Date(spike.date).toLocaleDateString()}
+                    {new Date(spike.date).toLocaleDateString('en-US')}
                   </p>
                   <p className="text-xs mt-1">
                     ${spike.previousCost.toFixed(2)} → ${spike.currentCost.toFixed(2)}
@@ -321,10 +367,42 @@ function OverviewTab({ analysis, deployments, insights, projectId }: any) {
   );
 }
 
-function CostsTab({ analysis, projectId }: any) {
+function CostsTab({ analysis: initialAnalysis, projectId }: any) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  const [analysis, setAnalysis] = useState(initialAnalysis);
+  const [dateRange, setDateRange] = useState("all");
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
+
+  useEffect(() => {
+    if (dateRange === "all") {
+      setAnalysis(initialAnalysis);
+      return;
+    }
+
+    const fetchFiltered = async () => {
+      setLoadingAnalysis(true);
+      try {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - parseInt(dateRange));
+        
+        const res = await fetch(`/api/billing/analysis?projectId=${projectId}&startDate=${start.toISOString()}&endDate=${end.toISOString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          setAnalysis(data.analysis);
+        }
+      } catch (error) {
+        console.error("Failed to fetch filtered analysis", error);
+      } finally {
+        setLoadingAnalysis(false);
+      }
+    };
+
+    fetchFiltered();
+  }, [dateRange, projectId, initialAnalysis]);
 
   async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -395,6 +473,71 @@ function CostsTab({ analysis, projectId }: any) {
 
       {analysis && (
         <>
+          <div className="flex justify-end mb-4">
+            <Select value={dateRange} onValueChange={setDateRange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select Date Range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="7">Last 7 Days</SelectItem>
+                <SelectItem value="30">Last 30 Days</SelectItem>
+                <SelectItem value="90">Last 90 Days</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <Card className={loadingAnalysis ? "opacity-50" : ""}>
+            <CardHeader>
+              <CardTitle>Spending Trends</CardTitle>
+              <CardDescription>Daily total cost over time</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={analysis.dailyCosts} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                    <XAxis 
+                      dataKey="date" 
+                      tickLine={false} 
+                      axisLine={false} 
+                      tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})} 
+                      tick={{fontSize: 12, fill: "var(--muted-foreground)"}} 
+                      dy={10}
+                    />
+                    <YAxis 
+                      tickLine={false} 
+                      axisLine={false} 
+                      tickFormatter={(val) => `$${val}`} 
+                      tick={{fontSize: 12, fill: "var(--muted-foreground)"}} 
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [`$${value.toFixed(2)}`, "Total Cost"]} 
+                      labelFormatter={(label) => new Date(label).toLocaleDateString('en-US')}
+                      contentStyle={{ 
+                        borderRadius: "8px", 
+                        border: "1px solid var(--border)",
+                        backgroundColor: "var(--background)",
+                        color: "var(--foreground)"
+                      }}
+                      itemStyle={{ color: "var(--primary)" }}
+                      labelStyle={{ color: "var(--foreground)", marginBottom: "4px" }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="total" 
+                      name="Total Cost" 
+                      stroke="var(--primary)" 
+                      strokeWidth={2} 
+                      dot={{ r: 3, fill: "var(--background)", stroke: "var(--primary)", strokeWidth: 2 }}
+                      activeDot={{ r: 5, fill: "var(--primary)", stroke: "var(--background)", strokeWidth: 2 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Service Breakdown</CardTitle>
@@ -431,7 +574,7 @@ function CostsTab({ analysis, projectId }: any) {
                       <div>
                         <p className="font-medium">{spike.service}</p>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(spike.date).toLocaleDateString()}
+                          {new Date(spike.date).toLocaleDateString('en-US')}
                         </p>
                       </div>
                       <div className="text-right">
@@ -454,7 +597,7 @@ function CostsTab({ analysis, projectId }: any) {
   );
 }
 
-function DeploymentsTab({ deployments, projectId, githubUrl }: any) {
+function DeploymentsTab({ deployments, correlations, projectId, githubUrl }: any) {
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
 
@@ -500,6 +643,51 @@ function DeploymentsTab({ deployments, projectId, githubUrl }: any) {
               {syncError && <p className="text-sm text-destructive mt-2">{syncError}</p>}
             </CardContent>
           </Card>
+
+          {correlations?.correlations?.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Deployment Impact Timeline</CardTitle>
+                <CardDescription>Correlated cost changes and engineering activities</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                  {correlations.correlations.map((correlation: any, idx: number) => (
+                    <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                        {correlation.deployment ? <GitBranch className="h-4 w-4" /> : <AlertCircle className="h-4 w-4 text-destructive" />}
+                      </div>
+                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg border bg-card shadow-sm">
+                        <div className="flex flex-col gap-2">
+                          {correlation.deployment && (
+                            <div>
+                              <Badge variant="outline" className="mb-2 bg-muted">Deployment</Badge>
+                              <p className="font-medium text-sm">{correlation.deployment.message}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {new Date(correlation.deployment.date).toLocaleDateString('en-US')} by {correlation.deployment.author}
+                              </p>
+                            </div>
+                          )}
+                          <div className="mt-2 pt-2 border-t border-border/50">
+                            <Badge variant="destructive" className="mb-2">Cost Spike</Badge>
+                            <p className="text-sm">
+                              <span className="font-semibold">{correlation.spike.service}</span> cost increased by <span className="font-semibold text-destructive">{correlation.spike.percentageIncrease.toFixed(1)}%</span>
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              ${correlation.spike.previousCost.toFixed(2)} → ${correlation.spike.currentCost.toFixed(2)} on {new Date(correlation.spike.date).toLocaleDateString('en-US')}
+                            </p>
+                          </div>
+                          <div className="mt-2 bg-muted/50 p-2 rounded text-xs text-muted-foreground">
+                            {correlation.reason}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader>
@@ -549,20 +737,8 @@ function InsightsTab({ insights, projectId }: any) {
   async function handleGenerate() {
     setGenerating(true);
     setError(null);
-
     try {
-      const res = await fetch("/api/insights/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId }),
-        credentials: "include",
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || "Failed to generate insights");
-      }
-
+      await generateProjectInsightsFn({ data: { projectId } });
       window.location.reload();
     } catch (error: any) {
       setError(error.message);
@@ -601,7 +777,7 @@ function InsightsTab({ insights, projectId }: any) {
                   <div>
                     <CardTitle className="text-lg">{insight.title}</CardTitle>
                     <CardDescription>
-                      {new Date(insight.createdAt).toLocaleDateString()}
+                      {new Date(insight.createdAt).toLocaleDateString('en-US')}
                     </CardDescription>
                   </div>
                   <Badge variant="secondary">{insight.confidenceScore}% confidence</Badge>
@@ -642,7 +818,7 @@ function SettingsTab({ project }: any) {
         <div>
           <Label className="text-sm font-medium">Created</Label>
           <p className="text-sm text-muted-foreground">
-            {new Date(project.createdAt).toLocaleDateString()}
+            {new Date(project.createdAt).toLocaleDateString('en-US')}
           </p>
         </div>
       </CardContent>
