@@ -16,7 +16,7 @@ async function main() {
   await prisma.user.deleteMany();
 
   console.log("Creating users...");
-  
+
   // Create Super Admin User
   const adminPassword = await bcrypt.hash("admin123", 10);
   const adminUser = await prisma.user.create({
@@ -24,7 +24,7 @@ async function main() {
       name: "Krishan Goyal",
       email: "krishan@admin.com",
       passwordHash: adminPassword,
-      role: "ADMIN"
+      role: "ADMIN",
     },
   });
 
@@ -35,7 +35,7 @@ async function main() {
       name: "Alice Smith",
       email: "alice@example.com",
       passwordHash: userPassword,
-      role: "USER"
+      role: "USER",
     },
   });
 
@@ -44,7 +44,7 @@ async function main() {
       name: "Bob Jones",
       email: "bob@example.com",
       passwordHash: userPassword,
-      role: "USER"
+      role: "USER",
     },
   });
 
@@ -53,7 +53,7 @@ async function main() {
       name: "Charlie Brown",
       email: "charlie@example.com",
       passwordHash: userPassword,
-      role: "USER"
+      role: "USER",
     },
   });
 
@@ -84,16 +84,16 @@ async function main() {
     [
       { name: "E-commerce Backend", repo: "acme/ecommerce-api" },
       { name: "Customer Portal", repo: "acme/customer-portal" },
-      { name: "Inventory Service", repo: "acme/inventory-service" }
+      { name: "Inventory Service", repo: "acme/inventory-service" },
     ],
     [
       { name: "Data Pipeline", repo: "globex/data-pipeline" },
       { name: "Auth Service", repo: "globex/auth-service" },
-      { name: "Billing API", repo: "globex/billing-api" }
+      { name: "Billing API", repo: "globex/billing-api" },
     ],
     [
       { name: "Mobile App Backend", repo: "initech/mobile-backend" },
-      { name: "Admin Dashboard", repo: "initech/admin-dashboard" }
+      { name: "Admin Dashboard", repo: "initech/admin-dashboard" },
     ],
   ];
 
@@ -114,10 +114,10 @@ async function main() {
 
       // Generate 30 days of billing records
       const services = ["AmazonEC2", "AmazonRDS", "AmazonS3", "AWSLambda"];
-      
-      let baseEC2Cost = 50 + Math.random() * 20;
-      let baseRDSCost = 100 + Math.random() * 30;
-      
+
+      const baseEC2Cost = 50 + Math.random() * 20;
+      const baseRDSCost = 100 + Math.random() * 30;
+
       // Determine spike day
       const spikeDayOffset = Math.floor(Math.random() * 15) + 5; // spike between day 5 and 20 ago
       const spikeDate = new Date(now);
@@ -126,11 +126,13 @@ async function main() {
       for (let day = 30; day >= 0; day--) {
         const recordDate = new Date(now);
         recordDate.setDate(recordDate.getDate() - day);
-        
+
         const isSpikePeriod = day <= spikeDayOffset;
-        
+
         // EC2 costs jump by 250% after spike day
-        const ec2Cost = isSpikePeriod ? baseEC2Cost * (2.5 + Math.random() * 0.5) : baseEC2Cost + (Math.random() * 5 - 2.5);
+        const ec2Cost = isSpikePeriod
+          ? baseEC2Cost * (2.5 + Math.random() * 0.5)
+          : baseEC2Cost + (Math.random() * 5 - 2.5);
         const rdsCost = baseRDSCost + (Math.random() * 10 - 5);
         const s3Cost = 15 + Math.random() * 2;
         const lambdaCost = isSpikePeriod ? 20 * 1.5 : 20 + Math.random() * 5;
@@ -150,11 +152,11 @@ async function main() {
       for (let j = 0; j < numDeployments; j++) {
         const depDate = new Date(now);
         depDate.setDate(depDate.getDate() - Math.floor(Math.random() * 30));
-        
+
         await prisma.deployment.create({
           data: {
             projectId: project.id,
-            commitHash: crypto.randomBytes(20).toString('hex'),
+            commitHash: crypto.randomBytes(20).toString("hex"),
             message: `chore: update dependencies for ${projectData.name}`,
             author: "dev-bot",
             createdAt: depDate,
@@ -166,7 +168,7 @@ async function main() {
       await prisma.deployment.create({
         data: {
           projectId: project.id,
-          commitHash: crypto.randomBytes(20).toString('hex'),
+          commitHash: crypto.randomBytes(20).toString("hex"),
           message: `feat: add background image processing workers`,
           author: "Demo Admin",
           createdAt: spikeDate,
@@ -186,7 +188,9 @@ async function main() {
     }
   }
 
-  console.log("Seeding complete! You can log in with krishan@admin.com / admin123 or alice@example.com / password123");
+  console.log(
+    "Seeding complete! You can log in with krishan@admin.com / admin123 or alice@example.com / password123",
+  );
 }
 
 main()

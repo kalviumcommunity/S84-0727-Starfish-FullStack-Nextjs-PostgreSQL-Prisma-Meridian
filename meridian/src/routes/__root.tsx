@@ -143,13 +143,13 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {isLoading && (
         <div className="fixed top-0 left-0 z-50 h-1 w-full overflow-hidden bg-primary/20">
-          <div 
-            className="h-full bg-primary" 
-            style={{ 
-              width: '50%', 
-              animation: 'progress 1.5s ease-in-out infinite',
-              transformOrigin: '0% 50%' 
-            }} 
+          <div
+            className="h-full bg-primary"
+            style={{
+              width: "50%",
+              animation: "progress 1.5s ease-in-out infinite",
+              transformOrigin: "0% 50%",
+            }}
           />
           <style>{`
             @keyframes progress {

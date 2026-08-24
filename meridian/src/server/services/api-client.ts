@@ -17,12 +17,15 @@ export async function uploadBillingCSV(projectId: string, csvContent: string) {
   return res.json();
 }
 
-export async function getBillingRecords(projectId: string, options?: {
-  startDate?: string;
-  endDate?: string;
-  service?: string;
-  limit?: number;
-}) {
+export async function getBillingRecords(
+  projectId: string,
+  options?: {
+    startDate?: string;
+    endDate?: string;
+    service?: string;
+    limit?: number;
+  },
+) {
   const params = new URLSearchParams({ projectId, ...options } as any);
   const res = await fetch(`/api/billing?${params}`);
 
@@ -34,11 +37,14 @@ export async function getBillingRecords(projectId: string, options?: {
   return res.json();
 }
 
-export async function analyzeCosts(projectId: string, options?: {
-  startDate?: string;
-  endDate?: string;
-  spikeThreshold?: number;
-}) {
+export async function analyzeCosts(
+  projectId: string,
+  options?: {
+    startDate?: string;
+    endDate?: string;
+    spikeThreshold?: number;
+  },
+) {
   const params = new URLSearchParams({ projectId, ...options } as any);
   const res = await fetch(`/api/billing/analysis?${params}`);
 
@@ -65,11 +71,14 @@ export async function connectGitHub(projectId: string, githubUrl: string, token?
   return res.json();
 }
 
-export async function getCommits(projectId: string, options?: {
-  limit?: number;
-  since?: string;
-  until?: string;
-}) {
+export async function getCommits(
+  projectId: string,
+  options?: {
+    limit?: number;
+    since?: string;
+    until?: string;
+  },
+) {
   const params = new URLSearchParams({ projectId, ...options } as any);
   const res = await fetch(`/api/github/commits?${params}`);
 
@@ -81,10 +90,14 @@ export async function getCommits(projectId: string, options?: {
   return res.json();
 }
 
-export async function syncGitHub(projectId: string, token?: string, options?: {
-  since?: string;
-  limit?: number;
-}) {
+export async function syncGitHub(
+  projectId: string,
+  token?: string,
+  options?: {
+    since?: string;
+    limit?: number;
+  },
+) {
   const res = await fetch("/api/github/sync", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -99,11 +112,14 @@ export async function syncGitHub(projectId: string, token?: string, options?: {
   return res.json();
 }
 
-export async function correlateCosts(projectId: string, options?: {
-  startDate?: string;
-  endDate?: string;
-  spikeThreshold?: number;
-}) {
+export async function correlateCosts(
+  projectId: string,
+  options?: {
+    startDate?: string;
+    endDate?: string;
+    spikeThreshold?: number;
+  },
+) {
   const params = new URLSearchParams({ projectId, ...options } as any);
   const res = await fetch(`/api/correlation/analyze?${params}`);
 
@@ -127,11 +143,14 @@ export async function getInsights(projectId: string, limit?: number) {
   return res.json();
 }
 
-export async function generateInsight(projectId: string, options?: {
-  startDate?: string;
-  endDate?: string;
-  spikeThreshold?: number;
-}) {
+export async function generateInsight(
+  projectId: string,
+  options?: {
+    startDate?: string;
+    endDate?: string;
+    spikeThreshold?: number;
+  },
+) {
   const res = await fetch("/api/insights/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

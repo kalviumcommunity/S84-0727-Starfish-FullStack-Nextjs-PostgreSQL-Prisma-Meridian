@@ -18,8 +18,14 @@ export const Route = createFileRoute("/app")({
 });
 
 const AVATAR_COLORS = [
-  "bg-red-500", "bg-orange-500", "bg-green-500", "bg-teal-500", 
-  "bg-blue-500", "bg-indigo-500", "bg-purple-500", "bg-pink-500"
+  "bg-red-500",
+  "bg-orange-500",
+  "bg-green-500",
+  "bg-teal-500",
+  "bg-blue-500",
+  "bg-indigo-500",
+  "bg-purple-500",
+  "bg-pink-500",
 ];
 
 function AppLayout() {
@@ -47,7 +53,10 @@ function AppLayout() {
       <header className="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-50">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex items-center gap-6">
-            <Link to="/app" className="font-display text-lg font-bold tracking-tight flex items-center gap-2">
+            <Link
+              to="/app"
+              className="font-display text-lg font-bold tracking-tight flex items-center gap-2"
+            >
               <Cloud className="h-6 w-6 text-primary" />
               CloudLens AI
             </Link>
@@ -56,28 +65,37 @@ function AppLayout() {
                 to="/app"
                 activeOptions={{ exact: true }}
                 className="text-muted-foreground transition-all hover:text-foreground px-3 py-1.5 rounded-md"
-                activeProps={{ className: "text-foreground font-medium bg-primary/10 text-primary" }}
+                activeProps={{
+                  className: "text-foreground font-medium bg-primary/10 text-primary",
+                }}
               >
                 Dashboard
               </Link>
               <Link
                 to="/app/organizations"
                 className="text-muted-foreground transition-all hover:text-foreground px-3 py-1.5 rounded-md"
-                activeProps={{ className: "text-foreground font-medium bg-primary/10 text-primary" }}
+                activeProps={{
+                  className: "text-foreground font-medium bg-primary/10 text-primary",
+                }}
               >
                 Organizations
               </Link>
               <Link
                 to="/app/projects"
                 className="text-muted-foreground transition-all hover:text-foreground px-3 py-1.5 rounded-md"
-                activeProps={{ className: "text-foreground font-medium bg-primary/10 text-primary" }}
+                activeProps={{
+                  className: "text-foreground font-medium bg-primary/10 text-primary",
+                }}
               >
                 Projects
               </Link>
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white ${avatarColor}`} title={user.email}>
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white ${avatarColor}`}
+              title={user.email}
+            >
               {initial}
             </div>
             <Button variant="outline" size="sm" onClick={handleLogout}>

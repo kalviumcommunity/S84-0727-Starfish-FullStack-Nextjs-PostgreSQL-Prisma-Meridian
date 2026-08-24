@@ -77,58 +77,58 @@ export const createProjectFn = createServerFn({ method: "POST" })
 export const getGlobalDashboardStatsFn = createServerFn({ method: "GET" }).handler(async () => {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
-  
+
   const { getDb } = await import("./db");
   const db = getDb();
-  
+
   // Get all projects for the user
   const projects = await db.project.findMany({
     where: { organization: { ownerId: user.id } },
-    select: { id: true, name: true, organization: { select: { name: true } } }
+    select: { id: true, name: true, organization: { select: { name: true } } },
   });
-  
-  const projectIds = projects.map(p => p.id);
-  
+
+  const projectIds = projects.map((p) => p.id);
+
   // Dates for current and previous 30 days
   const now = new Date();
   const thirtyDaysAgo = new Date(now);
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  
+
   const sixtyDaysAgo = new Date(thirtyDaysAgo);
   sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 30);
-  
+
   // Fetch current period cost
   const currentCostAgg = await db.billingRecord.aggregate({
     _sum: { cost: true },
-    where: { projectId: { in: projectIds }, date: { gte: thirtyDaysAgo } }
+    where: { projectId: { in: projectIds }, date: { gte: thirtyDaysAgo } },
   });
-  
+
   // Fetch prior period cost
   const priorCostAgg = await db.billingRecord.aggregate({
     _sum: { cost: true },
-    where: { projectId: { in: projectIds }, date: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } }
+    where: { projectId: { in: projectIds }, date: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } },
   });
-  
+
   const currentCost = currentCostAgg._sum.cost ? Number(currentCostAgg._sum.cost) : 0;
   const priorCost = priorCostAgg._sum.cost ? Number(priorCostAgg._sum.cost) : 0;
-  
+
   let costIncreasePercentage = 0;
   if (priorCost > 0) {
     costIncreasePercentage = ((currentCost - priorCost) / priorCost) * 100;
   }
-  
+
   // Fetch recent high-confidence insights (issues)
   const recentIssues = await db.insight.findMany({
     where: { projectId: { in: projectIds } },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: 5,
-    include: { project: { select: { name: true } } }
+    include: { project: { select: { name: true } } },
   });
-  
+
   return {
     totalCost: currentCost,
     costIncreasePercentage,
     activeProjects: projectIds.length,
-    recentIssues
+    recentIssues,
   };
 });

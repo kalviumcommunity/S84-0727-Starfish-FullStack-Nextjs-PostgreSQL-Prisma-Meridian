@@ -36,5 +36,3 @@ export async function requireAdminAuth(_request?: Request) {
   }
   return user;
 }
-
-

@@ -43,10 +43,7 @@ export const Route = createFileRoute("/api/insights/generate")({
           if (data.endDate) options.endDate = new Date(data.endDate);
 
           // Get correlation analysis
-          const correlationResult = await correlateDeploymentsWithCosts(
-            data.projectId,
-            options,
-          );
+          const correlationResult = await correlateDeploymentsWithCosts(data.projectId, options);
 
           if (correlationResult.totalSpikes === 0) {
             return jsonResponse({

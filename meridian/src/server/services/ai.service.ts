@@ -18,9 +18,7 @@ interface AIInsightResponse {
  * Generate AI insights using Groq API (free tier)
  * Fallback to rule-based insights if API key not available
  */
-export async function generateAIInsights(
-  request: AIInsightRequest,
-): Promise<AIInsightResponse> {
+export async function generateAIInsights(request: AIInsightRequest): Promise<AIInsightResponse> {
   // Require explicit opt-in before calling external AI services
   // Set environment variable ALLOW_EXTERNAL_AI=true to enable external APIs.
   // By default (or when not enabled), use rule-based insights to avoid any paid services.
@@ -62,7 +60,7 @@ async function generateGroqInsights(
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -70,7 +68,8 @@ async function generateGroqInsights(
       messages: [
         {
           role: "system",
-          content: "You are a FinOps expert analyzing cloud cost changes and deployments. Provide concise, actionable insights.",
+          content:
+            "You are a FinOps expert analyzing cloud cost changes and deployments. Provide concise, actionable insights.",
         },
         {
           role: "user",
@@ -224,7 +223,9 @@ function generateRuleBasedInsights(request: AIInsightRequest): AIInsightResponse
       recommendations.push(
         `Review the deployment "${topCorr.deployment.message}" for resource-intensive changes`,
       );
-      recommendations.push(`Check if autoscaling is properly configured for ${topCorr.spike.service}`);
+      recommendations.push(
+        `Check if autoscaling is properly configured for ${topCorr.spike.service}`,
+      );
       recommendations.push("Monitor resource utilization metrics for this service");
     } else {
       description += `No recent deployments were found, suggesting an external factor or usage pattern change.`;

@@ -1,16 +1,29 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Cloud, TrendingUp, FolderKanban, Building2, ArrowRight, Upload, GitBranch, Loader2 } from "lucide-react";
+import {
+  Cloud,
+  TrendingUp,
+  FolderKanban,
+  Building2,
+  ArrowRight,
+  Upload,
+  GitBranch,
+  Loader2,
+} from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { listOrganizationsFn, listProjectsFn, getGlobalDashboardStatsFn } from "@/server/app.functions";
+import {
+  listOrganizationsFn,
+  listProjectsFn,
+  getGlobalDashboardStatsFn,
+} from "@/server/app.functions";
 
 export const Route = createFileRoute("/app/")({
   loader: async () => {
     const [organizations, projects, globalStats] = await Promise.all([
-      listOrganizationsFn(), 
+      listOrganizationsFn(),
       listProjectsFn(),
-      getGlobalDashboardStatsFn()
+      getGlobalDashboardStatsFn(),
     ]);
     return { organizations, projects, globalStats };
   },
@@ -74,7 +87,7 @@ function DashboardPage() {
         />
         <StatCard
           title="Cost Trend"
-          value={`${globalStats.costIncreasePercentage > 0 ? '+' : ''}${globalStats.costIncreasePercentage.toFixed(1)}%`}
+          value={`${globalStats.costIncreasePercentage > 0 ? "+" : ""}${globalStats.costIncreasePercentage.toFixed(1)}%`}
           icon={<TrendingUp className="h-5 w-5" />}
           color={globalStats.costIncreasePercentage > 0 ? "orange" : "green"}
         />
@@ -136,9 +149,7 @@ function DashboardPage() {
                     <div className="flex items-center justify-between p-3 border rounded-lg hover:border-primary/50 hover:bg-accent/50 transition-colors">
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold truncate">{project.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {project.organization.name}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{project.organization.name}</p>
                       </div>
                       <div className="flex gap-4 text-xs text-muted-foreground">
                         <span>{project._count.deployments} deploys</span>
@@ -155,23 +166,48 @@ function DashboardPage() {
         {/* Global Issues / Setup */}
         <Card>
           <CardHeader>
-            <CardTitle>{hasData ? 'Globally Detected Issues' : 'Setup Progress'}</CardTitle>
+            <CardTitle>{hasData ? "Globally Detected Issues" : "Setup Progress"}</CardTitle>
             <CardDescription>
-              {hasData ? 'Recent anomalies and insights across all projects' : 'Complete these steps to start analyzing costs'}
+              {hasData
+                ? "Recent anomalies and insights across all projects"
+                : "Complete these steps to start analyzing costs"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {!hasData ? (
               <>
-                <Step done={organizations.length > 0} label="Create an organization" description="Group your projects under organizations" />
-                <Step done={projects.length > 0} label="Add a project" description="Create projects to track costs" />
-                <Step done={projects.some((p) => p.githubUrl)} label="Connect GitHub" description="Link repositories to track deployments" />
-                <Step done={totalBillingRecords > 0} label="Upload billing data" description="Import cost data via CSV" />
-                <Step done={totalInsights > 0} label="Generate AI insights" description="Get intelligent cost recommendations" />
+                <Step
+                  done={organizations.length > 0}
+                  label="Create an organization"
+                  description="Group your projects under organizations"
+                />
+                <Step
+                  done={projects.length > 0}
+                  label="Add a project"
+                  description="Create projects to track costs"
+                />
+                <Step
+                  done={projects.some((p) => p.githubUrl)}
+                  label="Connect GitHub"
+                  description="Link repositories to track deployments"
+                />
+                <Step
+                  done={totalBillingRecords > 0}
+                  label="Upload billing data"
+                  description="Import cost data via CSV"
+                />
+                <Step
+                  done={totalInsights > 0}
+                  label="Generate AI insights"
+                  description="Get intelligent cost recommendations"
+                />
                 {organizations.length === 0 && (
                   <div className="pt-4">
                     <Link to="/app/organizations">
-                      <Button className="w-full">Get Started<ArrowRight className="h-4 w-4 ml-2" /></Button>
+                      <Button className="w-full">
+                        Get Started
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
                     </Link>
                   </div>
                 )}
@@ -186,10 +222,16 @@ function DashboardPage() {
                 {globalStats.recentIssues.map((issue) => (
                   <div key={issue.id} className="border-l-4 border-orange-500 pl-4 py-1">
                     <p className="font-semibold text-sm">{issue.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{issue.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                      {issue.description}
+                    </p>
                     <div className="flex gap-2 mt-2">
-                      <span className="text-[10px] bg-muted px-2 py-0.5 rounded font-medium">{issue.project.name}</span>
-                      <span className="text-[10px] text-muted-foreground py-0.5">{new Date(issue.createdAt).toLocaleDateString('en-US')}</span>
+                      <span className="text-[10px] bg-muted px-2 py-0.5 rounded font-medium">
+                        {issue.project.name}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground py-0.5">
+                        {new Date(issue.createdAt).toLocaleDateString("en-US")}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -223,11 +265,17 @@ function StatCard({
   };
 
   const content = (
-    <Card className={href ? "transition-all hover:border-primary/40 hover:shadow-md cursor-pointer" : undefined}>
+    <Card
+      className={
+        href ? "transition-all hover:border-primary/40 hover:shadow-md cursor-pointer" : undefined
+      }
+    >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardDescription className="font-medium">{title}</CardDescription>
-          <div className={`p-2 rounded-lg ${colorClasses[color as keyof typeof colorClasses] || colorClasses.blue}`}>
+          <div
+            className={`p-2 rounded-lg ${colorClasses[color as keyof typeof colorClasses] || colorClasses.blue}`}
+          >
             {icon}
           </div>
         </div>
@@ -247,22 +295,12 @@ function StatCard({
   return content;
 }
 
-function Step({
-  done,
-  label,
-  description,
-}: {
-  done: boolean;
-  label: string;
-  description: string;
-}) {
+function Step({ done, label, description }: { done: boolean; label: string; description: string }) {
   return (
     <div className="flex items-start gap-3">
       <span
         className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold flex-shrink-0 mt-0.5 ${
-          done
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted text-muted-foreground"
+          done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
         }`}
       >
         {done ? "✓" : "·"}

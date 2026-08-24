@@ -25,9 +25,9 @@ export const Route = createFileRoute("/api/projects/$projectId/export")({
             },
             include: {
               billingRecords: {
-                orderBy: { date: "desc" }
-              }
-            }
+                orderBy: { date: "desc" },
+              },
+            },
           });
 
           if (!project) {
@@ -35,13 +35,13 @@ export const Route = createFileRoute("/api/projects/$projectId/export")({
           }
 
           if (format === "csv") {
-            const records = project.billingRecords.map(r => ({
+            const records = project.billingRecords.map((r) => ({
               Date: r.date.toISOString().split("T")[0],
               Service: r.service,
-              Cost: r.cost.toNumber().toFixed(2)
+              Cost: r.cost.toNumber().toFixed(2),
             }));
             const csv = stringify(records, { header: true });
-            
+
             return new Response(csv, {
               headers: {
                 "Content-Type": "text/csv",
@@ -51,26 +51,28 @@ export const Route = createFileRoute("/api/projects/$projectId/export")({
           } else if (format === "pdf") {
             const analysis = await getProjectAnalysis({ data: project.id });
             const correlations = await getProjectCorrelations({ data: project.id });
-            
+
             return new Promise((resolve, reject) => {
               const doc = new PDFDocument({ margin: 50 });
-              let buffers: Buffer[] = [];
-              
-              doc.on('data', buffers.push.bind(buffers));
-              doc.on('end', () => {
+              const buffers: Buffer[] = [];
+
+              doc.on("data", buffers.push.bind(buffers));
+              doc.on("end", () => {
                 const pdfData = Buffer.concat(buffers);
-                resolve(new Response(pdfData, {
-                  headers: {
-                    "Content-Type": "application/pdf",
-                    "Content-Disposition": `attachment; filename="${project.name.replace(/\s+/g, "_")}-report.pdf"`,
-                  }
-                }));
+                resolve(
+                  new Response(pdfData, {
+                    headers: {
+                      "Content-Type": "application/pdf",
+                      "Content-Disposition": `attachment; filename="${project.name.replace(/\s+/g, "_")}-report.pdf"`,
+                    },
+                  }),
+                );
               });
 
               // Construct PDF
               doc.fontSize(20).text(`CloudLens AI Report: ${project.name}`, { align: "center" });
               doc.moveDown();
-              
+
               if (analysis) {
                 doc.fontSize(14).text("Cost Overview");
                 doc.fontSize(10).text(`Total Cost: $${analysis.totalCost.toFixed(2)}`);
@@ -79,7 +81,9 @@ export const Route = createFileRoute("/api/projects/$projectId/export")({
 
                 doc.fontSize(12).text("Service Breakdown");
                 analysis.costByService.forEach((s: any) => {
-                  doc.fontSize(10).text(`- ${s.service}: $${s.cost.toFixed(2)} (${s.percentage.toFixed(1)}%)`);
+                  doc
+                    .fontSize(10)
+                    .text(`- ${s.service}: $${s.cost.toFixed(2)} (${s.percentage.toFixed(1)}%)`);
                 });
                 doc.moveDown();
               }
@@ -88,7 +92,12 @@ export const Route = createFileRoute("/api/projects/$projectId/export")({
                 doc.fontSize(14).text("Correlated Anomalies");
                 doc.moveDown(0.5);
                 correlations.correlations.forEach((c: any) => {
-                  doc.fontSize(10).fillColor("red").text(`Spike: ${c.spike.service} increased ${c.spike.percentageIncrease.toFixed(1)}%`);
+                  doc
+                    .fontSize(10)
+                    .fillColor("red")
+                    .text(
+                      `Spike: ${c.spike.service} increased ${c.spike.percentageIncrease.toFixed(1)}%`,
+                    );
                   doc.fillColor("black").text(c.reason);
                   doc.moveDown(0.5);
                 });

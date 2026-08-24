@@ -57,12 +57,10 @@ function LoginPage() {
             CloudLens AI
           </Link>
         </div>
-        
+
         <div className="space-y-8">
           <div>
-            <h1 className="text-4xl font-bold mb-4">
-              Understand Your Cloud Costs
-            </h1>
+            <h1 className="text-4xl font-bold mb-4">Understand Your Cloud Costs</h1>
             <p className="text-xl text-blue-100">
               Connect deployments with cost changes. Get AI-powered insights in seconds.
             </p>
@@ -87,17 +85,13 @@ function LoginPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">AI Insights</h3>
-                <p className="text-blue-100">
-                  Get actionable recommendations powered by AI
-                </p>
+                <p className="text-blue-100">Get actionable recommendations powered by AI</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="text-sm text-blue-200">
-          © 2026 CloudLens AI. Built for FinOps teams.
-        </div>
+        <div className="text-sm text-blue-200">© 2026 CloudLens AI. Built for FinOps teams.</div>
       </div>
 
       {/* Right Side - Login Form */}
@@ -113,9 +107,7 @@ function LoginPage() {
           <Card className="border-2">
             <CardHeader className="space-y-1 text-center">
               <CardTitle className="text-2xl">Welcome back</CardTitle>
-              <CardDescription>
-                Sign in to your account to access your dashboard
-              </CardDescription>
+              <CardDescription>Sign in to your account to access your dashboard</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -154,13 +146,10 @@ function LoginPage() {
                   {pending ? "Signing in..." : "Sign in"}
                 </Button>
               </form>
-              
+
               <div className="mt-6 text-center text-sm">
                 <span className="text-muted-foreground">Don't have an account? </span>
-                <Link 
-                  to="/auth/register" 
-                  className="font-semibold text-primary hover:underline"
-                >
+                <Link to="/auth/register" className="font-semibold text-primary hover:underline">
                   Create account
                 </Link>
               </div>

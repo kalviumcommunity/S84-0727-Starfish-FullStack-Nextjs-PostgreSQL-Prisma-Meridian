@@ -1,7 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { listAllProjectsFn, deleteProjectAdminFn } from "@/server/admin.functions";
 import { useState } from "react";
-import { Loader2, Trash2, FolderKanban, MoreVertical, DollarSign, Activity, Github, Brain } from "lucide-react";
+import {
+  Loader2,
+  Trash2,
+  FolderKanban,
+  MoreVertical,
+  DollarSign,
+  Activity,
+  Github,
+  Brain,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -48,7 +57,7 @@ export const Route = createFileRoute("/admin/projects")({
 function AdminProjectsPage() {
   const initialProjects = Route.useLoaderData();
   const [projects, setProjects] = useState(initialProjects);
-  
+
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -58,7 +67,7 @@ function AdminProjectsPage() {
     try {
       const res = await deleteProjectAdminFn({ data: { projectId: projectToDelete } });
       if (res.success) {
-        setProjects(projects.filter(p => p.id !== projectToDelete));
+        setProjects(projects.filter((p) => p.id !== projectToDelete));
         toast.success("Project deleted successfully");
       }
     } catch (error: any) {
@@ -101,7 +110,7 @@ function AdminProjectsPage() {
                       <span>{project.name}</span>
                     </div>
                     {project.githubUrl && (
-                      <a 
+                      <a
                         href={project.githubUrl}
                         target="_blank"
                         rel="noreferrer"
@@ -136,7 +145,7 @@ function AdminProjectsPage() {
                     {project.insightsCount}
                   </div>
                 </Cell>
-                <Cell>{new Date(project.createdAt).toLocaleDateString('en-US')}</Cell>
+                <Cell>{new Date(project.createdAt).toLocaleDateString("en-US")}</Cell>
                 <Cell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -147,8 +156,8 @@ function AdminProjectsPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      
-                      <DropdownMenuItem 
+
+                      <DropdownMenuItem
                         className="text-destructive focus:text-destructive"
                         onClick={() => setProjectToDelete(project.id)}
                       >
@@ -171,19 +180,25 @@ function AdminProjectsPage() {
         </Table>
       </div>
 
-      <AlertDialog open={!!projectToDelete} onOpenChange={(open) => !open && setProjectToDelete(null)}>
+      <AlertDialog
+        open={!!projectToDelete}
+        onOpenChange={(open) => !open && setProjectToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the project,
-              all of its billing records, deployments, and insights.
+              This action cannot be undone. This will permanently delete the project, all of its
+              billing records, deployments, and insights.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={(e) => { e.preventDefault(); handleDeleteConfirm(); }}
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteConfirm();
+              }}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >

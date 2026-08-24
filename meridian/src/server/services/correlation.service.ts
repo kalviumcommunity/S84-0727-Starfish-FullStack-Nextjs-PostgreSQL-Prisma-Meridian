@@ -134,7 +134,8 @@ function generateCorrelationReason(
     return `Cost spike detected for ${spike.service}, but no recent deployments found within 48 hours.`;
   }
 
-  const timeDiffHours = Math.abs(spike.date.getTime() - deployment.createdAt.getTime()) / (1000 * 60 * 60);
+  const timeDiffHours =
+    Math.abs(spike.date.getTime() - deployment.createdAt.getTime()) / (1000 * 60 * 60);
   const timeDesc = timeDiffHours < 1 ? "less than an hour" : `${Math.round(timeDiffHours)} hours`;
 
   let reason = `${spike.service} cost increased by ${spike.percentageIncrease.toFixed(1)}% `;
@@ -196,7 +197,11 @@ export async function correlateDeploymentsWithCosts(
 
     // Find best matching deployment
     let bestDeployment = deployments[0];
-    let bestScore = calculateConfidenceScore(spike.date, deployments[0].createdAt, deployments[0].message);
+    let bestScore = calculateConfidenceScore(
+      spike.date,
+      deployments[0].createdAt,
+      deployments[0].message,
+    );
 
     for (const deployment of deployments) {
       const score = calculateConfidenceScore(spike.date, deployment.createdAt, deployment.message);

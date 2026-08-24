@@ -15,14 +15,29 @@ import {
   Download,
   Loader2,
 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,18 +45,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { 
-  getProjectWithData, 
-  getProjectAnalysis, 
-  getProjectDeployments, 
-  getProjectInsights, 
+import {
+  getProjectWithData,
+  getProjectAnalysis,
+  getProjectDeployments,
+  getProjectInsights,
   getProjectCorrelations,
-  generateProjectInsightsFn
+  generateProjectInsightsFn,
 } from "@/server/project.functions";
 
 export const Route = createFileRoute("/app/projects/$id")({
   loader: async ({ params }) => {
-
     // Fetch all data in parallel
     const [project, analysis, deployments, insights, correlations] = await Promise.all([
       getProjectWithData({ data: params.id }),
@@ -83,9 +97,7 @@ function ProjectDetailPage() {
             <span>/</span>
             <span>{project.organization?.name}</span>
           </div>
-          <h1 className="font-display text-3xl font-bold tracking-tight">
-            {project.name}
-          </h1>
+          <h1 className="font-display text-3xl font-bold tracking-tight">{project.name}</h1>
           {project.githubUrl && (
             <a
               href={project.githubUrl}
@@ -251,15 +263,10 @@ function OverviewTab({ analysis, deployments, insights, projectId }: any) {
                     </span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: `${item.percentage}%` }}
-                    />
+                    <div className="h-full bg-primary" style={{ width: `${item.percentage}%` }} />
                   </div>
                 </div>
-                <span className="ml-4 text-sm font-semibold">
-                  ${item.cost.toFixed(2)}
-                </span>
+                <span className="ml-4 text-sm font-semibold">${item.cost.toFixed(2)}</span>
               </div>
             ))}
           </CardContent>
@@ -324,7 +331,7 @@ function OverviewTab({ analysis, deployments, insights, projectId }: any) {
                     <p className="font-medium truncate">{deployment.message}</p>
                     <p className="text-xs text-muted-foreground">
                       by {deployment.author} •{" "}
-                      {new Date(deployment.createdAt).toLocaleDateString('en-US')}
+                      {new Date(deployment.createdAt).toLocaleDateString("en-US")}
                     </p>
                   </div>
                 </div>
@@ -352,7 +359,7 @@ function OverviewTab({ analysis, deployments, insights, projectId }: any) {
                   <p className="font-semibold text-sm">{spike.service}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Increased {spike.percentageIncrease.toFixed(1)}% on{" "}
-                    {new Date(spike.date).toLocaleDateString('en-US')}
+                    {new Date(spike.date).toLocaleDateString("en-US")}
                   </p>
                   <p className="text-xs mt-1">
                     ${spike.previousCost.toFixed(2)} → ${spike.currentCost.toFixed(2)}
@@ -388,8 +395,10 @@ function CostsTab({ analysis: initialAnalysis, projectId }: any) {
         const end = new Date();
         const start = new Date();
         start.setDate(end.getDate() - parseInt(dateRange));
-        
-        const res = await fetch(`/api/billing/analysis?projectId=${projectId}&startDate=${start.toISOString()}&endDate=${end.toISOString()}`);
+
+        const res = await fetch(
+          `/api/billing/analysis?projectId=${projectId}&startDate=${start.toISOString()}&endDate=${end.toISOString()}`,
+        );
         if (res.ok) {
           const data = await res.json();
           setAnalysis(data.analysis);
@@ -446,9 +455,9 @@ function CostsTab({ analysis: initialAnalysis, projectId }: any) {
           <CardDescription>
             Upload a CSV file with columns: Date, Service, Cost
             <br />
-            <a 
-              href="/sample-billing.csv" 
-              download 
+            <a
+              href="/sample-billing.csv"
+              download
               className="text-primary hover:underline text-sm mt-1 inline-block"
             >
               Download sample CSV template
@@ -466,8 +475,16 @@ function CostsTab({ analysis: initialAnalysis, projectId }: any) {
             />
           </div>
           {uploading && <p className="text-sm text-muted-foreground">Uploading...</p>}
-          {uploadError && <Alert variant="destructive"><AlertDescription>{uploadError}</AlertDescription></Alert>}
-          {uploadSuccess && <Alert><AlertDescription>✓ Upload successful!</AlertDescription></Alert>}
+          {uploadError && (
+            <Alert variant="destructive">
+              <AlertDescription>{uploadError}</AlertDescription>
+            </Alert>
+          )}
+          {uploadSuccess && (
+            <Alert>
+              <AlertDescription>✓ Upload successful!</AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
 
@@ -486,7 +503,7 @@ function CostsTab({ analysis: initialAnalysis, projectId }: any) {
               </SelectContent>
             </Select>
           </div>
-          
+
           <Card className={loadingAnalysis ? "opacity-50" : ""}>
             <CardHeader>
               <CardTitle>Spending Trends</CardTitle>
@@ -495,42 +512,60 @@ function CostsTab({ analysis: initialAnalysis, projectId }: any) {
             <CardContent>
               <div className="h-[300px] w-full mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={analysis.dailyCosts} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
+                  <LineChart
+                    data={analysis.dailyCosts}
+                    margin={{ top: 5, right: 5, bottom: 5, left: -20 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                    <XAxis 
-                      dataKey="date" 
-                      tickLine={false} 
-                      axisLine={false} 
-                      tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})} 
-                      tick={{fontSize: 12, fill: "var(--muted-foreground)"}} 
+                    <XAxis
+                      dataKey="date"
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(val) =>
+                        new Date(val).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                        })
+                      }
+                      tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
                       dy={10}
                     />
-                    <YAxis 
-                      tickLine={false} 
-                      axisLine={false} 
-                      tickFormatter={(val) => `$${val}`} 
-                      tick={{fontSize: 12, fill: "var(--muted-foreground)"}} 
+                    <YAxis
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(val) => `$${val}`}
+                      tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
                     />
-                    <Tooltip 
-                      formatter={(value: number) => [`$${value.toFixed(2)}`, "Total Cost"]} 
-                      labelFormatter={(label) => new Date(label).toLocaleDateString('en-US')}
-                      contentStyle={{ 
-                        borderRadius: "8px", 
+                    <Tooltip
+                      formatter={(value: number) => [`$${value.toFixed(2)}`, "Total Cost"]}
+                      labelFormatter={(label) => new Date(label).toLocaleDateString("en-US")}
+                      contentStyle={{
+                        borderRadius: "8px",
                         border: "1px solid var(--border)",
                         backgroundColor: "var(--background)",
-                        color: "var(--foreground)"
+                        color: "var(--foreground)",
                       }}
                       itemStyle={{ color: "var(--primary)" }}
                       labelStyle={{ color: "var(--foreground)", marginBottom: "4px" }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="total" 
-                      name="Total Cost" 
-                      stroke="var(--primary)" 
-                      strokeWidth={2} 
-                      dot={{ r: 3, fill: "var(--background)", stroke: "var(--primary)", strokeWidth: 2 }}
-                      activeDot={{ r: 5, fill: "var(--primary)", stroke: "var(--background)", strokeWidth: 2 }}
+                    <Line
+                      type="monotone"
+                      dataKey="total"
+                      name="Total Cost"
+                      stroke="var(--primary)"
+                      strokeWidth={2}
+                      dot={{
+                        r: 3,
+                        fill: "var(--background)",
+                        stroke: "var(--primary)",
+                        strokeWidth: 2,
+                      }}
+                      activeDot={{
+                        r: 5,
+                        fill: "var(--primary)",
+                        stroke: "var(--background)",
+                        strokeWidth: 2,
+                      }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -551,10 +586,7 @@ function CostsTab({ analysis: initialAnalysis, projectId }: any) {
                       <span>${item.cost.toFixed(2)}</span>
                     </div>
                     <div className="h-3 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary"
-                        style={{ width: `${item.percentage}%` }}
-                      />
+                      <div className="h-full bg-primary" style={{ width: `${item.percentage}%` }} />
                     </div>
                   </div>
                 ))}
@@ -570,11 +602,14 @@ function CostsTab({ analysis: initialAnalysis, projectId }: any) {
               <CardContent>
                 <div className="space-y-3">
                   {analysis.spikes.map((spike: any, idx: number) => (
-                    <div key={idx} className="flex justify-between items-center p-3 border rounded-lg">
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center p-3 border rounded-lg"
+                    >
                       <div>
                         <p className="font-medium">{spike.service}</p>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(spike.date).toLocaleDateString('en-US')}
+                          {new Date(spike.date).toLocaleDateString("en-US")}
                         </p>
                       </div>
                       <div className="text-right">
@@ -648,33 +683,55 @@ function DeploymentsTab({ deployments, correlations, projectId, githubUrl }: any
             <Card>
               <CardHeader>
                 <CardTitle>Deployment Impact Timeline</CardTitle>
-                <CardDescription>Correlated cost changes and engineering activities</CardDescription>
+                <CardDescription>
+                  Correlated cost changes and engineering activities
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
                   {correlations.correlations.map((correlation: any, idx: number) => (
-                    <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div
+                      key={idx}
+                      className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
+                    >
                       <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                        {correlation.deployment ? <GitBranch className="h-4 w-4" /> : <AlertCircle className="h-4 w-4 text-destructive" />}
+                        {correlation.deployment ? (
+                          <GitBranch className="h-4 w-4" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-destructive" />
+                        )}
                       </div>
                       <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg border bg-card shadow-sm">
                         <div className="flex flex-col gap-2">
                           {correlation.deployment && (
                             <div>
-                              <Badge variant="outline" className="mb-2 bg-muted">Deployment</Badge>
-                              <p className="font-medium text-sm">{correlation.deployment.message}</p>
+                              <Badge variant="outline" className="mb-2 bg-muted">
+                                Deployment
+                              </Badge>
+                              <p className="font-medium text-sm">
+                                {correlation.deployment.message}
+                              </p>
                               <p className="text-xs text-muted-foreground mt-1">
-                                {new Date(correlation.deployment.date).toLocaleDateString('en-US')} by {correlation.deployment.author}
+                                {new Date(correlation.deployment.date).toLocaleDateString("en-US")}{" "}
+                                by {correlation.deployment.author}
                               </p>
                             </div>
                           )}
                           <div className="mt-2 pt-2 border-t border-border/50">
-                            <Badge variant="destructive" className="mb-2">Cost Spike</Badge>
+                            <Badge variant="destructive" className="mb-2">
+                              Cost Spike
+                            </Badge>
                             <p className="text-sm">
-                              <span className="font-semibold">{correlation.spike.service}</span> cost increased by <span className="font-semibold text-destructive">{correlation.spike.percentageIncrease.toFixed(1)}%</span>
+                              <span className="font-semibold">{correlation.spike.service}</span>{" "}
+                              cost increased by{" "}
+                              <span className="font-semibold text-destructive">
+                                {correlation.spike.percentageIncrease.toFixed(1)}%
+                              </span>
                             </p>
                             <p className="text-xs text-muted-foreground mt-1">
-                              ${correlation.spike.previousCost.toFixed(2)} → ${correlation.spike.currentCost.toFixed(2)} on {new Date(correlation.spike.date).toLocaleDateString('en-US')}
+                              ${correlation.spike.previousCost.toFixed(2)} → $
+                              {correlation.spike.currentCost.toFixed(2)} on{" "}
+                              {new Date(correlation.spike.date).toLocaleDateString("en-US")}
                             </p>
                           </div>
                           <div className="mt-2 bg-muted/50 p-2 rounded text-xs text-muted-foreground">
@@ -704,8 +761,7 @@ function DeploymentsTab({ deployments, correlations, projectId, githubUrl }: any
                     <div key={deployment.id} className="border-l-2 border-primary pl-4 py-2">
                       <p className="font-medium">{deployment.message}</p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        by {deployment.author} •{" "}
-                        {new Date(deployment.createdAt).toLocaleString()}
+                        by {deployment.author} • {new Date(deployment.createdAt).toLocaleString()}
                       </p>
                       <code className="text-xs bg-muted px-2 py-1 rounded mt-2 inline-block">
                         {deployment.commitHash.slice(0, 7)}
@@ -755,16 +811,18 @@ function InsightsTab({ insights, projectId }: any) {
             <Brain className="h-5 w-5" />
             AI Insights
           </CardTitle>
-          <CardDescription>
-            Generate AI-powered cost analysis and recommendations
-          </CardDescription>
+          <CardDescription>Generate AI-powered cost analysis and recommendations</CardDescription>
         </CardHeader>
         <CardContent>
           <Button onClick={handleGenerate} disabled={generating}>
             <Brain className={`h-4 w-4 mr-2 ${generating ? "animate-pulse" : ""}`} />
             {generating ? "Generating..." : "Generate New Insight"}
           </Button>
-          {error && <Alert variant="destructive" className="mt-4"><AlertDescription>{error}</AlertDescription></Alert>}
+          {error && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
 
@@ -777,7 +835,7 @@ function InsightsTab({ insights, projectId }: any) {
                   <div>
                     <CardTitle className="text-lg">{insight.title}</CardTitle>
                     <CardDescription>
-                      {new Date(insight.createdAt).toLocaleDateString('en-US')}
+                      {new Date(insight.createdAt).toLocaleDateString("en-US")}
                     </CardDescription>
                   </div>
                   <Badge variant="secondary">{insight.confidenceScore}% confidence</Badge>
@@ -811,14 +869,12 @@ function SettingsTab({ project }: any) {
         </div>
         <div>
           <Label className="text-sm font-medium">GitHub URL</Label>
-          <p className="text-sm text-muted-foreground">
-            {project.githubUrl || "Not connected"}
-          </p>
+          <p className="text-sm text-muted-foreground">{project.githubUrl || "Not connected"}</p>
         </div>
         <div>
           <Label className="text-sm font-medium">Created</Label>
           <p className="text-sm text-muted-foreground">
-            {new Date(project.createdAt).toLocaleDateString('en-US')}
+            {new Date(project.createdAt).toLocaleDateString("en-US")}
           </p>
         </div>
       </CardContent>

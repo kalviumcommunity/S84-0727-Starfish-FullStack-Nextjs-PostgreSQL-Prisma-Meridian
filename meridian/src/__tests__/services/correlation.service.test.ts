@@ -1,7 +1,7 @@
 ﻿import { describe, it, expect } from "vitest";
 
 // We test the pure helper functions by extracting them from the service.
-// calculateConfidenceScore and generateCorrelationReason are not exported — 
+// calculateConfidenceScore and generateCorrelationReason are not exported —
 // so we test the observable behaviour via the exported interface types and
 // verify the scoring logic through known inputs.
 
@@ -13,12 +13,11 @@
 function calculateConfidenceScore(
   spikeDate: Date,
   deploymentDate: Date,
-  commitMessage: string
+  commitMessage: string,
 ): number {
   let score = 0;
 
-  const timeDiffHours =
-    Math.abs(spikeDate.getTime() - deploymentDate.getTime()) / (1000 * 60 * 60);
+  const timeDiffHours = Math.abs(spikeDate.getTime() - deploymentDate.getTime()) / (1000 * 60 * 60);
 
   if (timeDiffHours <= 1) score += 60;
   else if (timeDiffHours <= 6) score += 50;
@@ -28,20 +27,48 @@ function calculateConfidenceScore(
 
   const message = commitMessage.toLowerCase();
   const infrastructureKeywords = [
-    "infrastructure","deploy","scale","worker","server","instance",
-    "container","kubernetes","docker","lambda","function","database",
-    "cache","redis","queue","batch","cron","job",
+    "infrastructure",
+    "deploy",
+    "scale",
+    "worker",
+    "server",
+    "instance",
+    "container",
+    "kubernetes",
+    "docker",
+    "lambda",
+    "function",
+    "database",
+    "cache",
+    "redis",
+    "queue",
+    "batch",
+    "cron",
+    "job",
   ];
   const performanceKeywords = [
-    "performance","optimize","memory","cpu","processing","compute",
-    "load","parallel","concurrent",
+    "performance",
+    "optimize",
+    "memory",
+    "cpu",
+    "processing",
+    "compute",
+    "load",
+    "parallel",
+    "concurrent",
   ];
-  const costKeywords = ["cost","expensive","resource","usage","consumption"];
+  const costKeywords = ["cost", "expensive", "resource", "usage", "consumption"];
 
   let keywordScore = 0;
-  infrastructureKeywords.forEach((k) => { if (message.includes(k)) keywordScore += 15; });
-  performanceKeywords.forEach((k) => { if (message.includes(k)) keywordScore += 10; });
-  costKeywords.forEach((k) => { if (message.includes(k)) keywordScore += 5; });
+  infrastructureKeywords.forEach((k) => {
+    if (message.includes(k)) keywordScore += 15;
+  });
+  performanceKeywords.forEach((k) => {
+    if (message.includes(k)) keywordScore += 10;
+  });
+  costKeywords.forEach((k) => {
+    if (message.includes(k)) keywordScore += 5;
+  });
 
   score += Math.min(40, keywordScore);
   return Math.min(100, score);
@@ -73,14 +100,22 @@ describe("calculateConfidenceScore", () => {
   it("boosts score for infrastructure keywords in commit message", () => {
     const closeDeployDate = new Date("2026-01-10T11:50:00Z");
     const plainScore = calculateConfidenceScore(spikeDate, closeDeployDate, "fix typo");
-    const infraScore = calculateConfidenceScore(spikeDate, closeDeployDate, "deploy new kubernetes cluster");
+    const infraScore = calculateConfidenceScore(
+      spikeDate,
+      closeDeployDate,
+      "deploy new kubernetes cluster",
+    );
     expect(infraScore).toBeGreaterThan(plainScore);
   });
 
   it("boosts score for cost-related keywords", () => {
     const closeDeployDate = new Date("2026-01-10T11:50:00Z");
     const plainScore = calculateConfidenceScore(spikeDate, closeDeployDate, "fix typo");
-    const costScore = calculateConfidenceScore(spikeDate, closeDeployDate, "reduce resource consumption");
+    const costScore = calculateConfidenceScore(
+      spikeDate,
+      closeDeployDate,
+      "reduce resource consumption",
+    );
     expect(costScore).toBeGreaterThan(plainScore);
   });
 
@@ -89,7 +124,7 @@ describe("calculateConfidenceScore", () => {
     const score = calculateConfidenceScore(
       spikeDate,
       closeDeployDate,
-      "deploy infrastructure kubernetes docker scale server database cache redis"
+      "deploy infrastructure kubernetes docker scale server database cache redis",
     );
     expect(score).toBeLessThanOrEqual(100);
   });

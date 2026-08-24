@@ -48,7 +48,7 @@ export const Route = createFileRoute("/admin/users")({
 function AdminUsersPage() {
   const initialUsers = Route.useLoaderData();
   const [users, setUsers] = useState(initialUsers);
-  
+
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -56,7 +56,7 @@ function AdminUsersPage() {
     try {
       const res = await updateUserRoleFn({ data: { userId, role: newRole } });
       if (res.success) {
-        setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
+        setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
         toast.success(`User role updated to ${newRole}`);
       }
     } catch (error: any) {
@@ -70,7 +70,7 @@ function AdminUsersPage() {
     try {
       const res = await deleteUserFn({ data: { userId: userToDelete } });
       if (res.success) {
-        setUsers(users.filter(u => u.id !== userToDelete));
+        setUsers(users.filter((u) => u.id !== userToDelete));
         toast.success("User deleted successfully");
       }
     } catch (error: any) {
@@ -109,7 +109,10 @@ function AdminUsersPage() {
                 <Cell>{user.email}</Cell>
                 <Cell>
                   {user.role === "ADMIN" ? (
-                    <Badge variant="destructive" className="gap-1 bg-red-100 text-red-700 hover:bg-red-200 border-red-200">
+                    <Badge
+                      variant="destructive"
+                      className="gap-1 bg-red-100 text-red-700 hover:bg-red-200 border-red-200"
+                    >
                       <ShieldAlert className="h-3 w-3" />
                       Super Admin
                     </Badge>
@@ -132,7 +135,7 @@ function AdminUsersPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      
+
                       {user.role === "USER" ? (
                         <DropdownMenuItem onClick={() => handleRoleChange(user.id, "ADMIN")}>
                           Promote to Admin
@@ -142,9 +145,9 @@ function AdminUsersPage() {
                           Demote to User
                         </DropdownMenuItem>
                       )}
-                      
+
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="text-destructive focus:text-destructive"
                         onClick={() => setUserToDelete(user.id)}
                       >
@@ -172,14 +175,17 @@ function AdminUsersPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the user account
-              and remove their data from our servers.
+              This action cannot be undone. This will permanently delete the user account and remove
+              their data from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={(e) => { e.preventDefault(); handleDeleteConfirm(); }}
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteConfirm();
+              }}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >

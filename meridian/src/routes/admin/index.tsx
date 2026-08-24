@@ -23,9 +23,7 @@ function AdminDashboard() {
     <div className="space-y-6 max-w-6xl mx-auto">
       <div>
         <h1 className="font-display text-3xl font-bold tracking-tight">Platform Overview</h1>
-        <p className="text-muted-foreground mt-1">
-          Global metrics and system health for Meridian.
-        </p>
+        <p className="text-muted-foreground mt-1">Global metrics and system health for Meridian.</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -69,7 +67,11 @@ function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${stats.totalSpend.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              $
+              {stats.totalSpend.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </div>
             <p className="text-xs text-muted-foreground mt-1">Total cloud costs indexed</p>
           </CardContent>

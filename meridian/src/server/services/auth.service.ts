@@ -13,7 +13,7 @@ export async function registerUser(input: { name: string; email: string; passwor
   }
 
   const passwordHash = await hashPassword(data.password);
-  
+
   // Auto-assign admin role for @admin.com emails
   const role = email.endsWith("@admin.com") ? "ADMIN" : "USER";
 
@@ -48,7 +48,13 @@ export async function loginUser(input: { email: string; password: string }) {
   setSessionCookie(token);
 
   return {
-    user: { id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+    },
     token,
   };
 }

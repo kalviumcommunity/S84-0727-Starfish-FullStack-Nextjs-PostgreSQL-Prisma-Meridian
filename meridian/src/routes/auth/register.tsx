@@ -58,12 +58,10 @@ function RegisterPage() {
             CloudLens AI
           </Link>
         </div>
-        
+
         <div className="space-y-8">
           <div>
-            <h1 className="text-4xl font-bold mb-4">
-              FinOps Made Simple
-            </h1>
+            <h1 className="text-4xl font-bold mb-4">FinOps Made Simple</h1>
             <p className="text-xl text-blue-100">
               Start tracking cloud costs and deployment impact in minutes.
             </p>
@@ -76,9 +74,7 @@ function RegisterPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Cost Attribution</h3>
-                <p className="text-blue-100">
-                  Automatically link deployments to cost changes
-                </p>
+                <p className="text-blue-100">Automatically link deployments to cost changes</p>
               </div>
             </div>
 
@@ -88,9 +84,7 @@ function RegisterPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">AI-Powered Insights</h3>
-                <p className="text-blue-100">
-                  Get recommendations to optimize your cloud spending
-                </p>
+                <p className="text-blue-100">Get recommendations to optimize your cloud spending</p>
               </div>
             </div>
 
@@ -100,17 +94,13 @@ function RegisterPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Quick Setup</h3>
-                <p className="text-blue-100">
-                  Connect GitHub and upload billing CSV in seconds
-                </p>
+                <p className="text-blue-100">Connect GitHub and upload billing CSV in seconds</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="text-sm text-blue-200">
-          © 2026 CloudLens AI. Built for FinOps teams.
-        </div>
+        <div className="text-sm text-blue-200">© 2026 CloudLens AI. Built for FinOps teams.</div>
       </div>
 
       {/* Right Side - Register Form */}
@@ -126,9 +116,7 @@ function RegisterPage() {
           <Card className="border-2">
             <CardHeader className="space-y-1 text-center">
               <CardTitle className="text-2xl">Create your account</CardTitle>
-              <CardDescription>
-                Get started with CloudLens AI for free
-              </CardDescription>
+              <CardDescription>Get started with CloudLens AI for free</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -183,13 +171,10 @@ function RegisterPage() {
                   {pending ? "Creating account..." : "Create account"}
                 </Button>
               </form>
-              
+
               <div className="mt-6 text-center text-sm">
                 <span className="text-muted-foreground">Already have an account? </span>
-                <Link 
-                  to="/auth/login" 
-                  className="font-semibold text-primary hover:underline"
-                >
+                <Link to="/auth/login" className="font-semibold text-primary hover:underline">
                   Sign in
                 </Link>
               </div>

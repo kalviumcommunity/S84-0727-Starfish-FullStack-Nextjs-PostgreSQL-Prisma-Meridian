@@ -47,7 +47,7 @@ export const Route = createFileRoute("/admin/organizations")({
 function AdminOrgsPage() {
   const initialOrgs = Route.useLoaderData();
   const [orgs, setOrgs] = useState(initialOrgs);
-  
+
   const [orgToDelete, setOrgToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -57,7 +57,7 @@ function AdminOrgsPage() {
     try {
       const res = await deleteOrganizationFn({ data: { orgId: orgToDelete } });
       if (res.success) {
-        setOrgs(orgs.filter(o => o.id !== orgToDelete));
+        setOrgs(orgs.filter((o) => o.id !== orgToDelete));
         toast.success("Organization deleted successfully");
       }
     } catch (error: any) {
@@ -122,8 +122,8 @@ function AdminOrgsPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      
-                      <DropdownMenuItem 
+
+                      <DropdownMenuItem
                         className="text-destructive focus:text-destructive"
                         onClick={() => setOrgToDelete(org.id)}
                       >
@@ -151,14 +151,17 @@ function AdminOrgsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the organization,
-              all of its projects, billing records, deployments, and insights.
+              This action cannot be undone. This will permanently delete the organization, all of
+              its projects, billing records, deployments, and insights.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={(e) => { e.preventDefault(); handleDeleteConfirm(); }}
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteConfirm();
+              }}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >

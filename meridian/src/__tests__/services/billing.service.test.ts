@@ -49,7 +49,7 @@ describe("parseBillingCSV", () => {
 
   it("throws if CSV has fewer than 2 lines", () => {
     expect(() => parseBillingCSV("Date,Service,Cost")).toThrow(
-      "CSV must contain at least a header and one data row"
+      "CSV must contain at least a header and one data row",
     );
   });
 
@@ -57,7 +57,7 @@ describe("parseBillingCSV", () => {
     const csv = `Date,Service
 2026-01-01,EC2`;
     expect(() => parseBillingCSV(csv)).toThrow(
-      "CSV must have 'Date', 'Service', and 'Cost' columns"
+      "CSV must have 'Date', 'Service', and 'Cost' columns",
     );
   });
 

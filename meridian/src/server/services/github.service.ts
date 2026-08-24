@@ -23,11 +23,11 @@ export interface GitHubCommit {
 export function parseGitHubUrl(url: string): GitHubRepoInfo | null {
   try {
     // HTTPS format
-    const httpsMatch = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+    const httpsMatch = url.match(/github\.com\/([^/]+)\/([^/]+)/);
     if (httpsMatch) {
       const [, owner, repo] = httpsMatch;
       // Remove trailing slashes or queries if any, and remove .git
-      const cleanRepo = repo.split(/[?#\/]/)[0].replace(/\.git$/, "");
+      const cleanRepo = repo.split(/[?#/]/)[0].replace(/\.git$/, "");
       return {
         owner,
         repo: cleanRepo,
@@ -37,7 +37,7 @@ export function parseGitHubUrl(url: string): GitHubRepoInfo | null {
     }
 
     // SSH format
-    const sshMatch = url.match(/git@github\.com:([^\/]+)\/(.+?)(?:\.git)?$/);
+    const sshMatch = url.match(/git@github\.com:([^/]+)\/(.+?)(?:\.git)?$/);
     if (sshMatch) {
       const [, owner, repo] = sshMatch;
       return {

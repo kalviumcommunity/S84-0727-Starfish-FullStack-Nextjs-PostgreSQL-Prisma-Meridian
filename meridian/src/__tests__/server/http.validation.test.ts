@@ -159,5 +159,3 @@ describe("createProjectSchema", () => {
     expect(result.success).toBe(false);
   });
 });
-
-

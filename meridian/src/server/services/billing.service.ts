@@ -36,7 +36,10 @@ export function parseBillingCSV(csvContent: string): BillingRecord[] {
     throw new Error("CSV must contain at least a header and one data row");
   }
 
-  const header = lines[0].toLowerCase().split(",").map((h) => h.trim());
+  const header = lines[0]
+    .toLowerCase()
+    .split(",")
+    .map((h) => h.trim());
   const dateIdx = header.findIndex((h) => h === "date");
   const serviceIdx = header.findIndex((h) => h === "service");
   const costIdx = header.findIndex((h) => h === "cost");
@@ -235,7 +238,7 @@ export async function analyzeCosts(
   });
 
   // Prepare daily costs for chart
-  const dailyCosts = dates.map(date => {
+  const dailyCosts = dates.map((date) => {
     const servicesMap = dailyServiceCosts.get(date)!;
     const item: any = { date, total: 0 };
     servicesMap.forEach((cost, service) => {
