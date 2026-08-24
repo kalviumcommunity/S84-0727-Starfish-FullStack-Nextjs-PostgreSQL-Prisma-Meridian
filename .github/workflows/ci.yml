@@ -9,6 +9,10 @@ jobs:
     name: CI Checks
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
     defaults:
       run:
         working-directory: meridian
