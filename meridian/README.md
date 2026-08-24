@@ -7,6 +7,7 @@ Single-app architecture: one TanStack Start server serves the marketing site, da
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - PostgreSQL database (local or cloud like Neon, Supabase)
 - (Optional) GitHub Personal Access Token for private repos
@@ -22,19 +23,19 @@ cp .env.example .env
 
 **Required variables:**
 
-| Variable       | Description                                                         |
-| -------------- | ------------------------------------------------------------------- |
-| `DATABASE_URL` | PostgreSQL connection string (local Postgres, Neon free tier, etc.) |
+| Variable       | Description                                                                                |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| `DATABASE_URL` | PostgreSQL connection string (local Postgres, Neon free tier, etc.)                        |
 | `JWT_SECRET`   | Random string, **at least 16 characters** (e.g., `your-super-secret-jwt-key-min-16-chars`) |
-| `APP_URL`      | Public app URL (`http://localhost:3000` for local dev)              |
+| `APP_URL`      | Public app URL (`http://localhost:3000` for local dev)                                     |
 
 **Optional variables (for AI insights):**
 
-| Variable          | Description                                            |
-| ----------------- | ------------------------------------------------------ |
-| `GITHUB_TOKEN`    | GitHub Personal Access Token (optional for public repos) |
-| `GROQ_API_KEY`    | Groq API key for AI insights (free tier available - **recommended**)       |
-| `GEMINI_API_KEY`  | Google Gemini API key for AI insights (free tier available) |
+| Variable         | Description                                                          |
+| ---------------- | -------------------------------------------------------------------- |
+| `GITHUB_TOKEN`   | GitHub Personal Access Token (optional for public repos)             |
+| `GROQ_API_KEY`   | Groq API key for AI insights (free tier available - **recommended**) |
+| `GEMINI_API_KEY` | Google Gemini API key for AI insights (free tier available)          |
 
 **AI policy:** By default the app does NOT call external AI services. The server uses a local rule-based insights engine unless you explicitly opt-in. To enable external AI providers (Groq or Gemini), set `ALLOW_EXTERNAL_AI=true` in your `.env` and provide the appropriate API key(s). This prevents accidental use of paid APIs.
 
@@ -62,6 +63,7 @@ Open [http://localhost:3000](http://localhost:3000). Register at `/auth/register
 ## Implementation Status
 
 ### ✅ Phase 1: Foundation (Complete)
+
 - User registration, login, logout (JWT in HTTP-only cookie)
 - Organization and project management
 - REST API under `/api/*`
@@ -69,29 +71,34 @@ Open [http://localhost:3000](http://localhost:3000). Register at `/auth/register
 - Enhanced login/signup UI
 
 ### ✅ Phase 2: GitHub Integration (Complete)
+
 - Connect GitHub repositories to projects
 - Fetch and store commits as deployments
 - Sync commits automatically
 - Support for public and private repos
 
 ### ✅ Phase 3: Billing Engine (Complete)
+
 - CSV billing upload
 - Cost analysis and spike detection
 - Service-level cost breakdown
 - Historical cost tracking
 
 ### ✅ Phase 4: Correlation Engine (Complete)
+
 - Automatic correlation of cost spikes with deployments
 - Confidence scoring based on timing and context
 - Detailed correlation reasons
 
 ### ✅ Phase 5: AI Insights (Complete)
+
 - AI-powered cost analysis (Groq/Gemini)
 - Actionable recommendations
 - Fallback to rule-based insights
 - Insight storage and history
 
 ### 🚧 Phase 6: Dashboard (In Progress)
+
 - Overview dashboard
 - Cost visualization
 - Deployment timeline
@@ -111,14 +118,16 @@ Open [http://localhost:3000](http://localhost:3000). Register at `/auth/register
 ## API Endpoints
 
 ### Authentication
-| Method   | Path                 | Description                 |
-| -------- | -------------------- | --------------------------- |
-| POST     | `/api/auth/register` | Create account              |
-| POST     | `/api/auth/login`    | Sign in                     |
-| POST     | `/api/auth/logout`   | Sign out                    |
-| GET      | `/api/auth/me`       | Current user                |
+
+| Method | Path                 | Description    |
+| ------ | -------------------- | -------------- |
+| POST   | `/api/auth/register` | Create account |
+| POST   | `/api/auth/login`    | Sign in        |
+| POST   | `/api/auth/logout`   | Sign out       |
+| GET    | `/api/auth/me`       | Current user   |
 
 ### Organizations & Projects
+
 | Method   | Path                 | Description                 |
 | -------- | -------------------- | --------------------------- |
 | GET/POST | `/api/organizations` | List / create organizations |
@@ -126,25 +135,28 @@ Open [http://localhost:3000](http://localhost:3000). Register at `/auth/register
 | GET      | `/api/projects/:id`  | Get project                 |
 
 ### GitHub Integration
-| Method   | Path                 | Description                 |
-| -------- | -------------------- | --------------------------- |
-| POST     | `/api/github/connect`| Connect GitHub repo         |
-| GET      | `/api/github/commits`| Get deployment history      |
-| POST     | `/api/github/sync`   | Sync latest commits         |
+
+| Method | Path                  | Description            |
+| ------ | --------------------- | ---------------------- |
+| POST   | `/api/github/connect` | Connect GitHub repo    |
+| GET    | `/api/github/commits` | Get deployment history |
+| POST   | `/api/github/sync`    | Sync latest commits    |
 
 ### Billing
-| Method   | Path                 | Description                 |
-| -------- | -------------------- | --------------------------- |
-| POST     | `/api/billing/upload`| Upload billing CSV          |
-| GET      | `/api/billing`       | Get billing records         |
-| GET      | `/api/billing/analysis` | Analyze costs            |
+
+| Method | Path                    | Description         |
+| ------ | ----------------------- | ------------------- |
+| POST   | `/api/billing/upload`   | Upload billing CSV  |
+| GET    | `/api/billing`          | Get billing records |
+| GET    | `/api/billing/analysis` | Analyze costs       |
 
 ### Correlation & Insights
-| Method   | Path                 | Description                 |
-| -------- | -------------------- | --------------------------- |
-| GET      | `/api/correlation/analyze` | Correlate costs with deployments |
-| GET      | `/api/insights`      | Get insights                |
-| POST     | `/api/insights/generate` | Generate new AI insight |
+
+| Method | Path                       | Description                      |
+| ------ | -------------------------- | -------------------------------- |
+| GET    | `/api/correlation/analyze` | Correlate costs with deployments |
+| GET    | `/api/insights`            | Get insights                     |
+| POST   | `/api/insights/generate`   | Generate new AI insight          |
 
 ## Tech Stack
 
@@ -173,18 +185,21 @@ Date,Service,Cost
 ## Getting API Keys (Free)
 
 ### GitHub Token (Optional for public repos)
+
 1. Go to https://github.com/settings/tokens
 2. Generate new token (classic)
 3. Select `repo` scope
 4. Copy token to `.env` as `GITHUB_TOKEN`
 
 ### Groq API Key (Recommended for fast AI)
+
 1. Go to https://console.groq.com/keys
 2. Sign up for free account
 3. Create new API key
 4. Copy to `.env` as `GROQ_API_KEY`
 
 ### Gemini API Key (Alternative)
+
 1. Go to https://aistudio.google.com/app/apikey
 2. Sign in with Google
 3. Get API key
