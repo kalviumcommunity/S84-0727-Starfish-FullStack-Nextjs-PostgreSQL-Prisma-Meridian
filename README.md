@@ -1,6 +1,6 @@
 ## 📌 Overview
 
-Starfish is an enterprise-grade cloud cost intelligence platform that centralizes billing data, deployment history, monitoring metrics, and engineering metadata into one dashboard.
+Meridian is an enterprise-grade cloud cost intelligence platform that centralizes billing data, deployment history, monitoring metrics, and engineering metadata into one dashboard.
 
 Instead of manually investigating cloud bills, teams can automatically discover:
 
@@ -67,3 +67,14 @@ Instead of manually investigating cloud bills, teams can automatically discover:
 - Next.js API Routes
 - Prisma ORM
 - PostgreSQL
+
+
+## 🎯 Project Goals
+
+Meridian aims to:
+
+- Reduce the time required to investigate cloud cost spikes.
+- Connect infrastructure spending with engineering activity.
+- Improve visibility into team and service-level costs.
+- Provide actionable infrastructure optimization insights.
+- Centralize cost intelligence into a single dashboard.
