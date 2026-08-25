@@ -78,3 +78,25 @@ Meridian aims to:
 - Improve visibility into team and service-level costs.
 - Provide actionable infrastructure optimization insights.
 - Centralize cost intelligence into a single dashboard.
+
+## 👥 Target Users
+
+Starfish is designed for teams and organizations that need better visibility and control over their cloud infrastructure costs.
+
+### 👨‍💻 Engineering Teams
+Track how deployments, services, and engineering activities impact cloud spending.
+
+### ⚙️ DevOps & Platform Teams
+Monitor infrastructure costs, identify expensive resources, and discover opportunities for optimization.
+
+### 👔 Engineering Managers
+Understand spending across teams and projects and make informed infrastructure decisions.
+
+### 💰 Finance & FinOps Teams
+Connect cloud spending with engineering activities to improve cost attribution, budgeting, and financial visibility.
+
+### 🏗️ Cloud Architects
+Analyze infrastructure usage and identify inefficient or unnecessarily expensive resources.
+
+### 🏢 Organizations Using Cloud Infrastructure
+Organizations running workloads on cloud platforms can use Starfish to centralize cost intelligence and investigate unexpected spending.
