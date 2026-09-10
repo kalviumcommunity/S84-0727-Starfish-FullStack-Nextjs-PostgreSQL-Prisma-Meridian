@@ -101,5 +101,5 @@ Analyze infrastructure usage and identify inefficient or unnecessarily expensive
 ### 🏢 Organizations Using Cloud Infrastructure
 Organizations running workloads on cloud platforms can use Starfish to centralize cost intelligence and investigate unexpected spending.
 
-
+## Mock UX : https://www.figma.com/design/gzEiRARYKDHrL1mycHPif2/Sprint2_UX?node-id=0-1&t=eZVVWdgBxbbIlJMI-0
 ## Project Deployed Link : https://s84-0727-starfish-fullstack-nextjs.onrender.com/ 
